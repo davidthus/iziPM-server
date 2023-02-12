@@ -1,7 +1,7 @@
 const allowedOrigins = [
   "http://127.0.0.1:5173/",
-  "https://www.dandrepairshop.com",
-  "https://dandrepairshop.com",
+  "https://izi-pm.vercel.app/",
+  "https://www.izi-pm.vercel.app/",
 ];
 
 module.exports = allowedOrigins;

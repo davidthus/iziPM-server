@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-export const ProjectSchema = new mongoose.Schema(
+const ProjectSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     projectCharter: { type: String, required: true },

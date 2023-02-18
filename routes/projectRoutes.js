@@ -13,20 +13,20 @@ router.route("/:projectId/members").post(projectController.addMember);
 
 router.route("/:projectId/ownership").put(projectController.transferOwnership);
 
-router.route("/:projectId/name").put(projectController.updateProjectName);
+router.route("/:projectId/name").patch(projectController.updateProjectName);
 
 router.route("/:projectId/endDate").put(projectController.updateEndDate);
 
 router
   .route("/:projectId/user/:userId/promote")
-  .put(projectController.promoteMember);
+  .patch(projectController.promoteMember);
 
 router
   .route("/:projectId/user/:userId/demote")
-  .put(projectController.demoteMember);
+  .patch(projectController.demoteMember);
 
 router
   .route("/projects/:projectId/projectCharter")
-  .put(projectController.updateProjectCharter);
+  .patch(projectController.updateProjectCharter);
 
 module.exports = router;

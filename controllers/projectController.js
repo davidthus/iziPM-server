@@ -138,7 +138,7 @@ const transferOwnership = asyncHandler(async (req, res) => {
 });
 
 // @desc Update project name
-// @route PUT /projects/:projectId/name
+// @route PATCH /projects/:projectId/name
 // @access Private
 const updateProjectName = asyncHandler(async (req, res) => {
   const { newProjectName } = req.body;
@@ -198,7 +198,7 @@ const updateEndDate = asyncHandler(async (req, res) => {
 });
 
 // @desc Promote a team member to a project manager
-// @route PUT /projects/:projectId/user/:userId/promote
+// @route PATCH /projects/:projectId/user/:userId/promote
 // @access Private
 const promoteMember = asyncHandler(async (req, res) => {
   const { projectId, userId } = req.params;
@@ -247,7 +247,7 @@ const promoteMember = asyncHandler(async (req, res) => {
 });
 
 // @desc Demote a team member to a project manager
-// @route PUT /projects/:projectId/user/:userId/demote
+// @route PATCH /projects/:projectId/user/:userId/demote
 // @access Private
 const demoteMember = asyncHandler(async (req, res) => {
   const { projectId, userId } = req.params;
@@ -296,7 +296,7 @@ const demoteMember = asyncHandler(async (req, res) => {
 });
 
 // @desc Update a project's charter
-// @route PUT /projects/:projectId/projectCharter
+// @route PATCH /projects/:projectId/projectCharter
 // @access Private
 const updateProjectCharter = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
@@ -350,12 +350,11 @@ const deleteProject = asyncHandler(async (req, res) => {
     task.remove();
   });
 
-  const deletedProject = await project.remove();
-  if (deletedProject) {
-    return res.status(204).json({
-      message: `Project name '${deletedProject.name}' has been deleted.`,
-    });
-  }
+  const result = await project.deleteOne();
+
+  const reply = `Project ${result.name} with ID ${result._id} deleted`;
+
+  res.json(reply);
 });
 
 module.exports = {

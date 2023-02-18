@@ -3,6 +3,32 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 // const DefaultUserPfp = require("");
 
+// @desc Get a user
+// @route GET /users/:userId
+// @access Public
+const getUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await User.findById(userId).populate({
+    path: "projects",
+    populate: [
+      { path: "owner" },
+      { path: "projectManagers" },
+      { path: "members" },
+      {
+        path: "tasks",
+        populate: [{ path: "assignedTo" }, { path: "dependencies" }],
+      },
+    ],
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: "User could not be found." });
+  } else {
+    return res.status(200).json({ user });
+  }
+});
+
 // @desc Create new user
 // @route POST /users
 // @access Public
@@ -33,7 +59,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     username,
     email,
     password: hashedPwd,
-    notes: "",
+    notes: `${username}, these are your notes, you can write anything here!`,
     projects: [],
   };
 
@@ -48,13 +74,39 @@ const createNewUser = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc Get a user's projects
+// @route GET /users/:userId/projects
+// @access Public
+const getUserProjects = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await User.findById(userId).populate({
+    path: "projects",
+    populate: [
+      { path: "owner" },
+      { path: "projectManagers" },
+      { path: "members" },
+      {
+        path: "tasks",
+        populate: [{ path: "assignedTo" }, { path: "dependencies" }],
+      },
+    ],
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: "User could not be found." });
+  } else {
+    return res.status(200).json({ projects: user.projects });
+  }
+});
+
 // @@desc Update User
-// @@route PATCH /users/:id
+// @@route PATCH /users/:userId
 // @@access Private
 
 const updateUser = asyncHandler(async (req, res) => {
   const { notes, password, username, avatar } = req.body;
-  const userId = req.params.id;
+  const { userId } = req.params;
 
   const insufficientData = !notes || !username || !avatar;
   // check if client provides id and all the other fields
@@ -70,16 +122,13 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 
   // Check for duplicate
-  const duplicateUsernameOrEmail = await User.findOne({ username, email })
+  const duplicateUsername = await User.findOne({ username })
     .collation({ locale: "en", strength: 2 })
     .lean()
     .exec();
 
   // Allow updates to the original user
-  if (
-    duplicateUsernameOrEmail &&
-    duplicateUsernameOrEmail?._id.toString() !== userId
-  ) {
+  if (duplicateUsername && duplicateUsername?._id.toString() !== userId) {
     return res.status(409).json({ message: "Duplicate username or email" });
   }
 
@@ -96,11 +145,11 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 // @@desc Delete a User
-// @@route PATCH /users/:id
+// @@route DELETE /users/:userId
 // @@access Private
 
 const deleteUser = asyncHandler(async (req, res) => {
-  const userId = req.params.id;
+  const { userId } = req.params;
 
   // Does the user still have assigned tasks?
   // Do they belong to any projects?
@@ -123,4 +172,10 @@ const deleteUser = asyncHandler(async (req, res) => {
   res.json(reply);
 });
 
-module.exports = { updateUser, deleteUser, createNewUser };
+module.exports = {
+  updateUser,
+  deleteUser,
+  createNewUser,
+  getUser,
+  getUserProjects,
+};

@@ -1,7 +1,90 @@
-const User = require("../models/User");
+const User = require("../models/User.model");
+const path = require("path");
+const fsPromises = require("fs/promises");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
+
+// @desc Create new user
+// @route POST auth/signup
+// @access Public
+const signup = asyncHandler(async (req, res) => {
+  const { username, password, email } = req.body;
+
+  const insufficientData = !username || !password || !email;
+
+  // Confirm data
+  if (insufficientData) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  // Check for duplicate username or email
+  const duplicateUsernameOrEmail = await User.findOne({
+    $or: [{ username: username }, { email: email }],
+  })
+    .collation({ locale: "en", strength: 2 })
+    .lean();
+
+  if (duplicateUsernameOrEmail) {
+    return res.status(409).json({ message: "Duplicate username or email" });
+  }
+
+  // Hash password
+  const hashedPwd = await bcrypt.hash(password, 10); // salt rounds
+
+  const file = await fsPromises.open(
+    path.resolve("./public/images/defaultAvatar.png")
+  );
+
+  // Read the image file as a binary buffer
+  const imageBuffer = await file.readFile();
+
+  await file.close();
+
+  const userObject = {
+    username,
+    email,
+    password: hashedPwd,
+    avatar: {
+      data: imageBuffer,
+      contentType: "image/png",
+    },
+    notes: `${username}, these are your notes, you can write anything here!`,
+    projects: [],
+  };
+
+  // Create and store new user
+  const user = await User.create(userObject);
+
+  const accessToken = jwt.sign(
+    {
+      userId: user._id,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "30s" }
+  );
+
+  const refreshToken = jwt.sign(
+    { userId: user._id },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: "1d" }
+  );
+
+  // Create secure cookie with refresh token
+  res.cookie("jwt", refreshToken, {
+    httpOnly: true, //accessible only by web server
+    secure: true, //https
+    sameSite: "None", //cross-site cookie
+    maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
+  });
+
+  if (user) {
+    //created
+    return res.status(201).json({ accessToken });
+  } else {
+    return res.status(400).json({ message: "Invalid user data received" });
+  }
+});
 
 // @desc Login
 // @route POST /auth
@@ -26,13 +109,13 @@ const login = asyncHandler(async (req, res) => {
       userId: foundUser._id,
     },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "15m" }
+    { expiresIn: "30s" }
   );
 
   const refreshToken = jwt.sign(
     { userId: foundUser._id },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "1d" }
   );
 
   // Create secure cookie with refresh token
@@ -43,7 +126,7 @@ const login = asyncHandler(async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
   });
 
-  // Send accessToken containing username and roles
+  // Send accessToken containing suerId
   res.json({ accessToken });
 });
 
@@ -72,7 +155,7 @@ const refresh = (req, res) => {
           userId: foundUser._id,
         },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "15m" }
+        { expiresIn: "30s" }
       );
 
       res.json({ accessToken });
@@ -92,6 +175,7 @@ const logout = (req, res) => {
 
 module.exports = {
   login,
+  signup,
   refresh,
   logout,
 };

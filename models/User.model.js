@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const UserSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      default: uuidv4, // Generate unique ids using uuid library
+    },
     username: {
       required: true,
       type: String,
@@ -18,7 +23,10 @@ const UserSchema = new mongoose.Schema(
     },
     password: { required: true, type: String, minLength: 5, maxLength: 70 },
     notes: { required: false, type: String, default: "", maxLength: 2000 },
-    avatar: { required: false, type: Buffer },
+    avatar: {
+      data: Buffer,
+      contentType: String,
+    },
     projects: {
       required: true,
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Project" }],

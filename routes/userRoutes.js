@@ -1,13 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const usersController = require("../controllers/usersController");
+const upload = require("../middleware/upload");
+const verifyJWT = require("../middleware/verifyJWT");
 
-router.route("/").post(usersController.createNewUser);
+router.use(verifyJWT);
 
 router
-  .route("/:userId")
+  .route("/")
   .get(usersController.getUser)
-  .patch(usersController.updateUser)
+  .patch(upload.single("image"), usersController.updateUser)
   .delete(usersController.deleteUser);
+
+router.route("/projects").get(usersController.getUserProjects);
 
 module.exports = router;

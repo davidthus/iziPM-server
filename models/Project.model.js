@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const ProjectSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      default: uuidv4, // Generate unique ids using uuid library
+    },
     name: { type: String, required: true },
     projectCharter: { type: String, required: true },
     completedPercent: { type: Number, required: true },

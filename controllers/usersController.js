@@ -24,8 +24,6 @@ const getUser = asyncHandler(async (req, res) => {
 const getUserProjects = asyncHandler(async (req, res) => {
   const { userId } = req;
 
-  console.log(userId);
-
   const user = await User.findById(userId).populate({
     path: "projects",
     populate: [
@@ -39,7 +37,6 @@ const getUserProjects = asyncHandler(async (req, res) => {
     ],
   });
 
-  console.log(user);
   if (!user) {
     return res.status(404).json({ message: "User could not be found." });
   } else {

@@ -11,22 +11,22 @@ const ProjectSchema = new mongoose.Schema(
     projectCharter: { type: String, required: true },
     completedPercent: { type: Number, required: true },
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: true,
     },
     projectManagers: {
-      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+      type: [{ type: String, ref: "User" }],
       required: true,
     },
     members: {
-      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+      type: [{ type: String, ref: "User" }],
       required: true,
     },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: false },
     tasks: {
-      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }],
+      type: [{ type: String, ref: "Task" }],
       required: true,
     },
     groupChat: { type: Array, required: true },

@@ -61,13 +61,13 @@ const signup = asyncHandler(async (req, res) => {
       userId: user._id,
     },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "30s" }
+    { expiresIn: "15m" }
   );
 
   const refreshToken = jwt.sign(
     { userId: user._id },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: "1d" }
+    { expiresIn: "7d" }
   );
 
   // Create secure cookie with refresh token
@@ -109,13 +109,13 @@ const login = asyncHandler(async (req, res) => {
       userId: foundUser._id,
     },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "30s" }
+    { expiresIn: "15m" }
   );
 
   const refreshToken = jwt.sign(
     { userId: foundUser._id },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: "1d" }
+    { expiresIn: "7d" }
   );
 
   // Create secure cookie with refresh token
@@ -155,7 +155,7 @@ const refresh = (req, res) => {
           userId: foundUser._id,
         },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "30s" }
+        { expiresIn: "15m" }
       );
 
       res.json({ accessToken });

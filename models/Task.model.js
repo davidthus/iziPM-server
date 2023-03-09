@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const SubtaskSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    default: uuidv4, // Generate unique ids using uuid library
+  },
   name: String,
   isCompleted: Boolean,
 });
@@ -15,12 +20,12 @@ const TaskSchema = new mongoose.Schema(
       maxLength: 100,
     },
     projectId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: true,
     },
-    assignedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    taskDependencies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }],
+    assignedTo: [{ type: String, ref: "User" }],
+    taskDependencies: [{ type: String, ref: "Task" }],
     dueDate: { type: Date, required: true },
     subtasks: [SubtaskSchema],
   },

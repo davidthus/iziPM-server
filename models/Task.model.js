@@ -21,7 +21,7 @@ const TaskSchema = new mongoose.Schema(
     },
     projectId: {
       type: String,
-      ref: "User",
+      ref: "Project",
       required: true,
     },
     assignedTo: [{ type: String, ref: "User" }],

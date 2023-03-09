@@ -32,7 +32,11 @@ const getUserProjects = asyncHandler(async (req, res) => {
       { path: "members" },
       {
         path: "tasks",
-        populate: [{ path: "assignedTo" }, { path: "dependencies" }],
+        populate: [
+          { path: "assignedTo" },
+          { path: "dependencies" },
+          { path: "projectId" },
+        ],
       },
     ],
   });

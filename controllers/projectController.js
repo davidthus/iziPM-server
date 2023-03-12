@@ -7,7 +7,7 @@ const TaskModel = require("../models/Task.model");
 // @desc Create new project
 // @route POST /projects
 // @access Public
-const createNewProject = asyncHandler(async (req, res) => {
+const createProject = asyncHandler(async (req, res) => {
   const { userId, projectName } = req.body;
 
   if (!userId) {
@@ -32,9 +32,10 @@ const createNewProject = asyncHandler(async (req, res) => {
 
   if (newProject) {
     //created
-    return res
-      .status(201)
-      .json({ message: `New project ${projectName} created.` });
+    return res.status(201).json({
+      message: `New project ${projectName} created.`,
+      projectId: newProject._id,
+    });
   } else {
     return res.status(400).json({ message: "Invalid project data received." });
   }
@@ -359,7 +360,7 @@ const deleteProject = asyncHandler(async (req, res) => {
 
 module.exports = {
   getProject,
-  createNewProject,
+  createProject,
   updateProjectName,
   updateProjectCharter,
   transferOwnership,

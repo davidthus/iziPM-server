@@ -5,7 +5,7 @@ const verifyJWT = require("../middleware/verifyJWT");
 
 router.use(verifyJWT);
 
-router.route("/").post(projectController.createNewProject);
+router.route("/").post(projectController.createProject);
 
 router
   .route("/:projectId")

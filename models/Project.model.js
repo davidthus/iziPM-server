@@ -8,7 +8,7 @@ const ProjectSchema = new mongoose.Schema(
       default: uuidv4, // Generate unique ids using uuid library
     },
     name: { type: String, required: true },
-    projectCharter: { type: String, required: true },
+    projectCharter: { type: String, default: "" },
     completedPercent: { type: Number, required: true },
     owner: {
       type: String,

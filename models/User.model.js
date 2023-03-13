@@ -22,13 +22,12 @@ const UserSchema = new mongoose.Schema(
         /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
     },
     password: { required: true, type: String, minLength: 5, maxLength: 70 },
-    notes: { required: false, type: String, default: "", maxLength: 2000 },
+    notes: { type: String, default: "", maxLength: 2000 },
     avatar: {
       data: Buffer,
       contentType: String,
     },
     projects: {
-      required: true,
       type: [{ type: String, ref: "Project" }],
       default: [],
     },

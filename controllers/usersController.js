@@ -24,26 +24,28 @@ const getUser = asyncHandler(async (req, res) => {
 const getUserProjects = asyncHandler(async (req, res) => {
   const { userId } = req;
 
-  const user = await User.findById(userId).populate({
-    path: "projects",
-    populate: [
-      { path: "owner" },
-      { path: "projectManagers" },
-      { path: "members" },
-      {
-        path: "tasks",
-        populate: [
-          { path: "assignedTo" },
-          { path: "dependencies" },
-          { path: "projectId" },
-        ],
-      },
-    ],
-  });
+  const user = await User.findById(userId).populate("projects");
+  // .populate({
+  //   path: "projects",
+  //   populate: [
+  //     { path: "owner" },
+  //     { path: "projectManagers" },
+  //     { path: "members" },
+  //     {
+  //       path: "tasks",
+  //       populate: [
+  //         { path: "assignedTo" },
+  //         { path: "dependencies" },
+  //         { path: "projectId" },
+  //       ],
+  //     },
+  //   ],
+  // });
 
   if (!user) {
     return res.status(404).json({ message: "User could not be found." });
   } else {
+    console.log(user);
     return res.status(200).json({ projects: user.projects });
   }
 });

@@ -31,6 +31,13 @@ const createProject = asyncHandler(async (req, res) => {
   const newProject = await Project.create(projectObject);
 
   if (newProject) {
+    // add project to user's project array
+    const user = await User.findById(userId);
+
+    user.projects = [...user.projects, newProject._id];
+
+    await user.save();
+
     //created
     return res.status(201).json({
       message: `New project ${projectName} created.`,

@@ -8,7 +8,8 @@ const TaskModel = require("../models/Task.model");
 // @route POST /projects
 // @access Public
 const createProject = asyncHandler(async (req, res) => {
-  const { userId, projectName } = req.body;
+  const { projectName } = req.body;
+  const { userId } = req;
 
   if (!userId) {
     return res.status(400).json({ message: "User Id required." });
